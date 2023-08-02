@@ -8,13 +8,19 @@ contract IdentityContract is ERC721 {
         string name;
         bool isHappy;
         string thoughts;
-        string photo; // Add the photo parameter
-        address owner; // Store the owner's address for each identity
+        string photo;
+        address owner;
     }
 
     Identity[] private identities;
     address private owner;
-    mapping(address => bool) private hasMintedIdentity; // Mapping to track whether a user has minted an identity
+    mapping(address => bool) private hasMintedIdentity;
+    uint256 private maxIdentities = 100; // Set the maximum number of identities that can be minted
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only the contract owner can perform this action");
+        _;
+    }
 
     constructor() ERC721("Identity", "IDT") {
         owner = msg.sender;
@@ -26,30 +32,37 @@ contract IdentityContract is ERC721 {
         string memory _name,
         string memory _thoughts,
         bool _isHappy,
-        string memory _photo // Add the photo parameter
+        string memory _photo,
+        address _newOwner // New parameter to specify a different address for the new identity owner
     ) external {
         require(bytes(_name).length > 0, "Name cannot be empty");
         require(bytes(_thoughts).length <= 150, "Thoughts can be at most 150 characters");
-        require(!hasMintedIdentity[msg.sender], "Only one identity allowed per user");
+        require(identities.length < maxIdentities, "Max number of identities minted");
+
+        if (_newOwner != address(0)) {
+            require(!hasMintedIdentity[_newOwner], "The specified address already has an identity");
+        } else {
+            require(!hasMintedIdentity[msg.sender], "Only one identity allowed per user");
+            _newOwner = msg.sender;
+        }
 
         Identity memory identity;
         identity.name = _name;
         identity.thoughts = _thoughts;
         identity.isHappy = _isHappy;
         identity.photo = _photo;
-
-        identity.owner = msg.sender;
+        identity.owner = _newOwner;
 
         uint256 tokenId = identities.length + 1;
-        _mint(msg.sender, tokenId);
+        _mint(_newOwner, tokenId);
 
         identities.push(identity);
-        hasMintedIdentity[msg.sender] = true; // Mark the user as having minted an identity
+        hasMintedIdentity[_newOwner] = true;
 
-        emit IdentityMinted(msg.sender, tokenId); // Emit the event with the address and tokenId of the minted identity
+        emit IdentityMinted(_newOwner, tokenId);
     }
 
-     function updateIdentity(
+    function updateIdentity(
         uint256 tokenId,
         string memory _thoughts,
         bool _isHappy
@@ -57,7 +70,7 @@ contract IdentityContract is ERC721 {
         require(tokenId > 0 && tokenId <= identities.length, "Invalid token ID");
         Identity storage identity = identities[tokenId - 1];
         require(identity.owner == msg.sender, "Not the owner of the identity");
-        identity.thoughts = _thoughts;  
+        identity.thoughts = _thoughts;
         identity.isHappy = _isHappy;
     }
 
@@ -73,7 +86,15 @@ contract IdentityContract is ERC721 {
         return (
             identity.thoughts,
             identity.isHappy,
-            identity.photo // Return the photo parameter
+            identity.photo
         );
+    }
+
+    function hasUserMintedIdentity(address user) external view returns (bool) {
+        return hasMintedIdentity[user];
+    }
+
+    function setMaxIdentities(uint256 _maxIdentities) external onlyOwner {
+        maxIdentities = _maxIdentities;
     }
 }
