@@ -40,9 +40,6 @@ Contributions to IdentityNFTDapp are welcome! If you find any issues or have sug
 
 IdentityNFTDapp is open-source and available under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-## Acknowledgments
-
-The DApp was developed as part of [Celo's Solidity Hackathon](https://gitcoin.co/issue/celo-org/celo-proposals/82/100026589).
 
 ## Contact
 
@@ -50,4 +47,4 @@ For questions or inquiries, please contact the project maintainers:
 
 - Name: Federico Suarez
 - GitHub: [fedesuarez16](https://github.com/fedesuarez16)
-- Email: federico@example.com
+- Email: fedesuarez16@gmail.com
