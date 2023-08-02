@@ -1,0 +1,13 @@
+/* styles.css (or your preferred CSS file) */
+.custom-gradient-blur {
+  background: linear-gradient(
+    92.23deg,
+    #406aff 21.43%,
+    #3bace2 50.63%,
+    #b936ee 100%,
+    #ff56f6 117.04%
+  );
+  opacity: 0.8; /* Adjust the opacity value to make it darker */
+  backdrop-filter: blur(10px); /* Add a blur effect as desired */
+
+}
